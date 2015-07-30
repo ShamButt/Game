@@ -1,0 +1,62 @@
+package com.example.sham.tyregame;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+/**
+ * Created by Sham on 12/07/2015.
+ */
+public class Hurdle extends PhysicsElements {
+    float radius;
+    int id;
+    int height;
+    int width;
+    //float temp;
+
+    public Hurdle(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void update(long time)
+    {
+//        if(mPosition.Y>=(height/2)+(height/5))
+//        {
+//            mVelocity.Y=-0.45f;
+//        }
+//        else
+        if(mPosition.Y<=height/3)
+        {
+           mVelocity.Y=0.45f;
+        }
+
+        mVelocity.Y = GRAVITY * time +mVelocity.Y;
+
+        float temp;
+        temp=mVelocity.Y*time;
+        mPosition.Y=mPosition.Y+temp;
+        temp=mVelocity.X*time;
+        mPosition.X=mPosition.X-temp;
+
+        if(mPosition.X<-5)
+            mPosition.X=width;
+
+    }
+    @Override
+    public void draw(Canvas canvas)
+    {
+        Paint p= new Paint();
+
+        p.setStyle(Paint.Style.FILL);
+
+//        if(MyGameView.col)
+//            p.setColor(Color.RED);
+//        else
+//            p.setColor(Color.DKGRAY);
+        int x = (int)(mPosition.X+radius);
+        int y = (int)(mPosition.Y+radius);
+        canvas.drawCircle(x,y,(int)radius,p);
+    }
+}
