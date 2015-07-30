@@ -1,0 +1,33 @@
+package com.example.sham.tyregame;
+
+import android.content.Context;
+
+/**
+ * Created by Sham on 23/07/2015.
+ */
+public class Fast_Hurdle extends Hurdle {
+
+    public Fast_Hurdle(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void update(long time)
+    {
+        if(mPosition.Y<=height/3)
+        {
+            mVelocity.Y=0.45f * 2.0f;
+        }
+
+        mVelocity.Y = (GRAVITY*2) * time +mVelocity.Y;
+
+        float temp;
+        temp=mVelocity.Y*time;
+        mPosition.Y=mPosition.Y+temp;
+        temp=mVelocity.X*time;
+        mPosition.X=mPosition.X-temp;
+
+        if(mPosition.X<-5)
+            mPosition.X=width;
+    }
+}
