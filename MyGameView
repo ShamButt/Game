@@ -1,0 +1,317 @@
+package com.example.sham.tyregame;
+
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.os.Build;
+import android.os.Handler;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import static java.lang.Math.sqrt;
+
+/**
+ * Created by Sham on 04/07/2015.
+ */
+
+public class MyGameView extends View {
+
+    //PhysicsElements objj = new PhysicsElements();
+    private Animation anim;
+    Tyre tyre;
+    Hurdle hurdle;
+    Fast_Hurdle hurdle_2;
+    Road road;
+    MainActivity activity=null;
+    static int points;
+    int height;
+    int width;
+    float collision;
+    public static boolean col = false;
+    ArrayList<PhysicsElements> list = new ArrayList<PhysicsElements>();
+
+    DisplayMetrics display = getContext().getResources().getDisplayMetrics();
+
+    public MainActivity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(MainActivity activity) {
+        this.activity = activity;
+    }
+
+
+
+    public void initialization(){
+
+
+        height= display.heightPixels;
+        width= display.widthPixels;
+        points=0;
+
+        road=new Road(getContext());
+        road.height=height;
+        road.width=width;
+        road.radius=width/9;
+        road.mPosition.X=width/width;
+        road.mPosition.Y=height/4;
+        road.mVelocity.X=0.45f;
+        road.InitializeBitmap();
+        AddChild(road);
+
+        tyre=new Tyre(getContext());
+        tyre.radius=width/11;
+        tyre.mPosition.X=tyre.radius;
+        tyre.mPosition.Y=height/3;
+        tyre.InitializeBitmap();
+        tyre.mVelocity.X=0;
+        tyre.mAngularVelocity=-0.2f;
+        tyre.mAngel=0;
+        AddChild(tyre);
+
+        hurdle=new Hurdle(getContext());
+        hurdle.mVelocity.Y=0.45f;
+        hurdle.mPosition.X=width-((width/20)+(width/20));
+        hurdle.mPosition.Y=height/3;
+        hurdle.radius=width/20;
+        hurdle.width=width;
+        hurdle.height=height;
+        hurdle.id=0;
+        hurdle.mVelocity.X=0.2f;
+        AddChild(hurdle);
+
+        hurdle_2=new Fast_Hurdle(getContext());
+        hurdle_2.mVelocity.Y=0.45f*2.0f;
+        hurdle_2.mPosition.X=width-((width/20)+(width/20));
+        hurdle_2.mPosition.Y=height/3;
+        hurdle_2.radius=width/20;
+        hurdle_2.width=width;
+        hurdle_2.height=height;
+        hurdle_2.id=0;
+        hurdle_2.mVelocity.X=0.2f;
+        AddChild(hurdle_2);
+
+    }
+    public void AddChild(PhysicsElements physicsElements)
+    {
+        list.add(physicsElements);
+    }
+    public void Collisions()
+    {
+
+//        int xFactor=(int)(hurdles.vector.X_Pos-hurdles.radius) - (int)(tyre.vector.X_Pos-tyre.radius);
+//        int yFactor=((int)(hurdles.vector.Y_Pos-hurdles.radius) - (int)(tyre.vector.Y_Pos-tyre.radius));
+        float xFactor=(hurdle.mPosition.X) - (tyre.mPosition.X);
+        float yFactor=((hurdle.mPosition.Y) - (tyre.mPosition.Y));
+
+        if(xFactor<0)
+            xFactor*=-1;
+        if(yFactor<0)
+            yFactor*=-1;
+        collision = xFactor*xFactor +yFactor*yFactor;
+        collision= (float) sqrt(collision);
+        //collision = collision - ((tyre.radius+hurdles.radius));//*(tyre.radius+hurdles.radius));
+
+
+        //Log.e("Radius values", String.valueOf(((tyre.radius+hurdles.radius)*(tyre.radius+hurdles.radius))));
+        if(collision<((tyre.radius+hurdle.radius)) ) //*(tyre.radius+hurdles.radius)))
+        {
+            col=true;
+        }
+        else
+            col=false;
+
+
+    }
+
+    public MyGameView(Context context) {
+        super(context);
+        //init();
+    }
+
+    public MyGameView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        //init();
+    }
+
+    public MyGameView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        //init();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public MyGameView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // get pointer index from the event object
+        int pointerIndex = event.getActionIndex();
+
+        // get pointer ID
+        int pointerId = event.getPointerId(pointerIndex);
+
+        // get masked (not specific to a pointer) action
+        int maskedAction = event.getActionMasked();
+
+        switch (maskedAction) {
+
+
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                // TODO use data
+//                if(event.getY()>getHeight()/2)
+//                    tyre.Velocity=0.25f;
+//                else
+//                    tyre.Velocity=-0.25f;
+
+               // tyre.x=event.getX();
+               // tyre.y=event.getY();
+                tyre.mAngularVelocity*=2;
+                tyre.mVelocity.X=0.3f;
+                hurdle.mVelocity.X=0.45f;
+                hurdle_2.mVelocity.X=0.2f+ 0.25f;
+                if(tyre.mPosition.X>=hurdle.mPosition.X) {
+                    if(hurdle.id==0) {
+                        points++;
+                        hurdle.id=1;
+                    }
+                }
+
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: { // a pointer was moved
+                // TODO use data
+                tyre.mVelocity.X=0.3f;
+                hurdle.mVelocity.X=0.45f;
+                hurdle_2.mVelocity.X=0.2f + 0.25f;
+                if(tyre.mPosition.X>=hurdle.mPosition.X) {
+                    if(hurdle.id==0) {
+                        points++;
+                        hurdle.id=1;
+                    }
+                }
+                 break;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                // TODO use data
+                tyre.mVelocity.X=0.0f;
+                tyre.mVelocity.X=0;
+                hurdle.mVelocity.X=0.2f;
+                hurdle_2.mVelocity.X=0.2f;
+                tyre.mAngularVelocity/=2;
+                break;
+            }
+        }
+        invalidate();
+
+        return true;
+    }
+    public void ButtonWork()
+    {
+
+    }
+
+    private void createAnimation(Canvas canvas) {
+        anim = new RotateAnimation(0, 360, getWidth()/2, getHeight()/2);
+        anim.setRepeatMode(Animation.RESTART);
+        anim.setRepeatCount(Animation.INFINITE);
+        anim.setDuration(10000L);
+        startAnimation(anim);
+    }
+
+    public class Run{
+    long previousCall = System.currentTimeMillis();
+    Handler timerHandler = new Handler();
+    Runnable timerRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            long current_millis =System.currentTimeMillis();
+           long millis = System.currentTimeMillis() - previousCall;
+//           float seconds =  (millis / 1000.0f);
+//            int minutes = seconds / 60;
+//            seconds = seconds % 60;
+            previousCall=current_millis;
+            timerHandler.postDelayed(this, 16);
+            Log.d("Check", String.valueOf(millis));
+
+            Update(millis);
+
+        }
+    };
+    }
+    Run obj= new Run();
+    public void Update(long time)
+    {
+
+        for(int i=0;i<list.size();i++)
+        {
+            list.get(i).update(time);
+        }
+
+        //tyre.update(time);
+        //hurdle.update(time);
+        Log.d("Update", "Update is running");
+        Collisions();
+
+        if(activity!=null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    invalidate();
+                }
+            });
+        }
+        Log.d("Invalidate","Invalidate ko call kia hy");
+    }
+    @Override
+    public void draw(Canvas canvas){
+        super.draw(canvas);
+        Matrix m = new Matrix();
+        m.postScale(1.0f,-1.0f);
+        m.postTranslate(0.0f,getHeight());
+        canvas.setMatrix(m);
+        Paint p= new Paint();
+        //p.setStyle(Paint.Style.STROKE);
+        //p.setStrokeWidth(80);
+        p.setColor(Color.BLUE);
+       // Paint road= new Paint();
+        //road.setColor(Color.BLACK);
+        //Log.d("drawing ","cricle");
+        //canvas.drawCircle(tyre.x,tyre.y,tyre.radius,p);
+        //canvas.drawRect(500,500,500,500,p);
+
+        //canvas.drawRect(0,400,1000,600,road);
+       // if(anim==null)
+         //   createAnimation(canvas);
+       // canvas.drawCircle(getWidth()/2,getHeight()/2,50,p);
+        Log.d("Draw","draw is running");
+        for(int i=0;i<list.size();i++)
+        {
+            list.get(i).draw(canvas);
+        }
+        //road.draw(canvas);
+        //tyre.draw(canvas);
+        //hurdle.draw(canvas);
+
+
+    }
+}
