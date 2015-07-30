@@ -1,0 +1,80 @@
+package com.example.sham.tyregame;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.util.Log;
+
+/**
+ * Created by Sham on 12/07/2015.
+ */
+public class Tyre extends PhysicsElements {
+    float radius;
+    float circumference;
+    Bitmap bmp = BitmapFactory.decodeResource(context.getResources(),
+            R.drawable.tyre);
+
+    public void InitializeBitmap()
+    {
+        int diameter=(int) this.radius*2;
+        Bitmap temp = Bitmap.createScaledBitmap(bmp,diameter,diameter,true);
+        bmp.recycle();
+        bmp=temp;
+        circumference = 2*3.14159f*radius;
+    }
+
+    public Tyre(Context context) {
+        super(context);
+
+
+    }
+
+
+
+
+    @Override
+    public void update(long time)
+    {
+        float temp;
+        Log.e("Update of Tyre", String.valueOf(time));
+        temp = mVelocity.X*time;
+        Log.e("Checking velocity", String.valueOf(temp));
+        //mPosition.X=mPosition.X+temp;
+        mAngel=mAngularVelocity*time + mAngel;
+
+//            if(XPos>=hurdles.XPos) {
+//                if(hurdles.id!=0) {
+//                    points++;
+//                    hurdles.id=1;
+//                    //Toast.makeText(this, String.valueOf(points), Toast.LENGTH_SHORT).show();
+//                    Log.e("Points", String.valueOf(points)+" ho gaye han");
+//                }
+//            }
+    }
+    @Override
+    public void draw(Canvas canvas)
+    {
+        //TODO Draw of tyre
+        Paint p= new Paint();
+        // p.setStyle(Paint.Style.STROKE);
+        //p.setStrokeWidth(80);
+        p.setColor(Color.BLUE);
+        p.setStyle(Paint.Style.FILL);
+        int x = (int)(mPosition.X-radius);
+        int y = (int)(mPosition.Y-radius);
+
+        //canvas.drawCircle(x,y,(int)radius,p);
+        canvas.save();
+        canvas.rotate(mAngel,mPosition.X,mPosition.Y);
+        canvas.drawBitmap(bmp,x,y,p);
+        canvas.restore();
+        //canvas.drawBitmap(bmp,x,y,p);
+
+
+    }
+}
