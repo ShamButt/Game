@@ -1,0 +1,62 @@
+package com.example.sham.tyregame;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+/**
+ * Created by Sham on 12/07/2015.
+ */
+public class Road extends PhysicsElements {
+
+    int height;
+    int width;
+    int bitmap2width;
+    float radius;
+    Bitmap roadBitmap = BitmapFactory.decodeResource(context.getResources(),
+            R.drawable.mainroad);
+    Bitmap roadBitmap2 = BitmapFactory.decodeResource(context.getResources(),
+            R.drawable.mainroad);
+
+    public void InitializeBitmap()
+    {
+        int diameter=(int) this.radius*2;
+        Bitmap temp = Bitmap.createScaledBitmap(roadBitmap,width,diameter,true);
+        roadBitmap.recycle();
+        roadBitmap=temp;
+        roadBitmap2.recycle();
+        roadBitmap2=temp;
+        bitmap2width=width;
+    }
+
+    public Road(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void update(long time)
+    {
+        if(mPosition.X< (-1*(width+1))) {
+            mPosition.X = width / width;
+            bitmap2width=width;
+        }
+        mPosition.X-=time*mVelocity.X;
+        bitmap2width-=time*mVelocity.X;
+
+    }
+    @Override
+    public void draw(Canvas canvas)
+    {
+        Paint p= new Paint();
+        p.setColor(Color.BLACK);
+        //canvas.drawRect(0,((height/3)-(height/7)),width,(height/3),p);
+        int x = (int)(mPosition.X);
+        int y = (int)(mPosition.Y);
+        canvas.drawBitmap(roadBitmap,x,y,p);
+        canvas.drawBitmap(roadBitmap2,bitmap2width+2,y,p);
+
+    }
+}
